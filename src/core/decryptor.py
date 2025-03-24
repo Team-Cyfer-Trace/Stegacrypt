@@ -1,125 +1,68 @@
-import base64
-import logging
-import os
-import uuid
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+import json
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives.hashes import SHA256
-from cryptography.hazmat.primitives.hmac import HMAC
-from cryptography.hazmat.primitives import padding
-from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from base64 import b64decode
+import logging
 
-# Configurable parameters
-KDF_ITERATIONS = 200_000
-KEY_LENGTH = 32
-IV_LENGTH = 16
-SALT_LENGTH = 16
-HMAC_LENGTH = 32
-MAC_IDENTIFIER = uuid.getnode()  # Get system's MAC address as identifier
-
-# Track decryption attempts
-ATTEMPTS = {}
-MAX_ATTEMPTS = 3
-
-
-def track_decryption():
-    """
-    Tracks decryption attempts based on the system's MAC address.
-    Raises an error if the maximum attempts are exceeded.
-    """
-    global ATTEMPTS
-    if MAC_IDENTIFIER not in ATTEMPTS:
-        ATTEMPTS[MAC_IDENTIFIER] = 0
-    ATTEMPTS[MAC_IDENTIFIER] += 1
-
-    if ATTEMPTS[MAC_IDENTIFIER] > MAX_ATTEMPTS:
-        logging.error("Maximum decryption attempts exceeded.")
-        raise ValueError("Maximum decryption attempts exceeded for this system.")
-    logging.info(f"Decryption attempt {ATTEMPTS[MAC_IDENTIFIER]}/{MAX_ATTEMPTS}")
-
-
-def secure_decrypt(encrypted_data: str, password: str) -> str:
-    """
-    Decrypts an encrypted message using AES-CBC and validates its integrity.
-
-    Args:
-        encrypted_data (str): The encrypted message in Base64 format.
-        password (str): The password to derive the decryption key.
-
-    Returns:
-        str: The decrypted plaintext message.
-
-    Raises:
-        ValueError: If the encrypted data is invalid or integrity check fails.
-    """
+def decrypt_message(encrypted_message: str, password: str) -> str:
     try:
-        logging.debug("Starting decryption process...")
-        data = base64.b64decode(encrypted_data.encode())
-        logging.debug(f"Decoded data length: {len(data)}")
+        # Decode the Base64-encoded data
+        data = b64decode(encrypted_message)
 
-        # Extract components
-        ciphertext = data[:-HMAC_LENGTH - IV_LENGTH - SALT_LENGTH]
-        iv = data[-HMAC_LENGTH - IV_LENGTH - SALT_LENGTH:-HMAC_LENGTH - SALT_LENGTH]
-        salt = data[-HMAC_LENGTH - SALT_LENGTH:-HMAC_LENGTH]
-        hmac_digest = data[-HMAC_LENGTH:]
+        # Extract metadata length
+        metadata_length = int.from_bytes(data[:4], byteorder="big")
+        logging.debug(f"Metadata length: {metadata_length}")
 
-        logging.debug(f"IV (length {len(iv)}): {iv.hex()}")
-        logging.debug(f"Salt (length {len(salt)}): {salt.hex()}")
-        logging.debug(f"Ciphertext (length {len(ciphertext)}): {ciphertext.hex()}")
-        logging.debug(f"HMAC Digest (length {len(hmac_digest)}): {hmac_digest.hex()}")
-        # Log the extracted and computed HMAC
-        logging.debug(f"Extracted HMAC: {hmac_digest.hex()}")
-        logging.debug(f"Computed HMAC during decryption: {hmac.finalize().hex()}")
+        # Extract metadata
+        metadata_start = 4
+        metadata_end = metadata_start + metadata_length
+        metadata = json.loads(data[metadata_start:metadata_end].decode())
+        logging.debug(f"Metadata: {metadata}")
 
+        # Extract lengths from metadata
+        salt_length = metadata["salt_length"]
+        iv_length = metadata["iv_length"]
+        kdf_iterations = metadata["kdf_iterations"]
 
+        # Extract ciphertext, IV, salt, and tag
+        start = metadata_end
+        end_ciphertext = len(data) - salt_length - iv_length - 16
+        ciphertext = data[start:end_ciphertext]
+        iv = data[end_ciphertext:end_ciphertext + iv_length]
+        salt = data[end_ciphertext + iv_length:end_ciphertext + iv_length + salt_length]
+        tag = data[-16:]
 
-        # Derive the encryption key
+        # Validate extracted lengths
+        logging.debug(f"Extracted lengths - IV: {len(iv)}, Salt: {len(salt)}, Tag: {len(tag)}")
+        if len(iv) != iv_length:
+            raise ValueError(f"Invalid IV length: expected {iv_length}, got {len(iv)}")
+
+        # Derive the encryption key using PBKDF2
         kdf = PBKDF2HMAC(
-            algorithm=SHA256(),
-            length=KEY_LENGTH,
+            algorithm=hashes.SHA256(),
+            length=32,
             salt=salt,
-            iterations=KDF_ITERATIONS,
+            iterations=kdf_iterations,
+            backend=default_backend(),
         )
         key = kdf.derive(password.encode())
-        logging.debug("Key derivation successful.")
 
-        # Verify HMAC for integrity
-        hmac = HMAC(key, SHA256())
-        hmac.update(ciphertext + iv + salt)
-        hmac.verify(hmac_digest)
-        logging.debug("HMAC verification successful.")
+        # Create the cipher for decryption
+        decryptor = Cipher(
+            algorithms.AES(key),
+            modes.GCM(iv, tag),
+            backend=default_backend(),
+        ).decryptor()
 
-        # Decrypt the message
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
-        decryptor = cipher.decryptor()
-        padded_message = decryptor.update(ciphertext) + decryptor.finalize()
-        logging.debug("Cipher decryption successful.")
+        # Decrypt and finalize
+        plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+        return plaintext.decode()
 
-        # Remove padding
-        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
-        message = unpadder.update(padded_message) + unpadder.finalize()
-        logging.debug("Padding removed successfully.")
-
-        return message.decode()
-
-    except InvalidSignature:
-        logging.error("HMAC verification failed. Data integrity check failed.")
-        raise ValueError("Data integrity check failed. Potential tampering detected.")
+    except ValueError as ve:
+        logging.error(f"Decryption error: {ve}")
+        raise
     except Exception as e:
-        logging.error(f"Decryption failed: {e}")
-        raise ValueError(f"Decryption failed: {e}")
-
-
-def decrypt_with_tracking(encrypted_data: str, password: str) -> str:
-    """
-    Decrypts a message and tracks decryption attempts.
-
-    Args:
-        encrypted_data (str): The encrypted message in Base64 format.
-        password (str): The password for decryption.
-
-    Returns:
-        str: The decrypted plaintext message.
-    """
-    track_decryption()
-    return secure_decrypt(encrypted_data, password)
+        logging.error("Unexpected error during decryption.")
+        raise
