@@ -19,7 +19,7 @@ Welcome to the StegaCrypt Mini CTF! Your mission is to extract a hidden riddle f
 
 ### 🧩 **What You Need to Do**
 1. **Extract the Hidden Data**: Use any tool or method (other than StegaCrypt) to uncover the embedded riddle from the image.  
-2. **Decrypt the Message**: Once extracted, decrypt the data using the provided password (`footsteps`).  
+2. **Decrypt the Message**: Once extracted, decrypt the data using the riddled password.  
 3. **Solve the Riddle**: Share your solution with us!  
 
 ---
