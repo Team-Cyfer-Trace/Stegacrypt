@@ -1,8 +1,8 @@
 import argparse
 import logging
 import traceback
-from Custom_crypto import encrypt_message, decrypt_message
-from Image_steganography import embed_data_in_image, extract_data_from_image
+from steganography.Custom_crypto import encrypt_message, decrypt_message
+from steganography.Image_steganography import embed_data_in_image, extract_data_from_image
 
 # Configure logging
 logging.basicConfig(
