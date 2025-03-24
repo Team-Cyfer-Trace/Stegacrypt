@@ -12,7 +12,7 @@ logging.basicConfig(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Image Steganography with Encryption and Decryption"
+        description="Image Steganography with Encryption and Decryption | Proudly Made by Team Cyfer Trace"
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
