@@ -2,8 +2,7 @@ import argparse
 import logging
 import traceback
 import base64
-from src.core.encryptor import encrypt_message
-from src.core.decryptor import decrypt_message
+from src.core.Custom_crypto import encrypt_message, decrypt_message
 
 # Configure logging
 logging.basicConfig(
