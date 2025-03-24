@@ -3,6 +3,13 @@ Welcome to the StegaCrypt Mini CTF! Your mission is to extract a hidden riddle f
 
 ---
 
+### 📜 **Rules**
+1. Do not use StegaCrypt to extract the data.  
+2. Be respectful of others and ethical in your approach.  
+3. Have fun and challenge yourself!  
+
+---
+
 ### 🕵️ **Your Objective**
 1. **Find the Hidden Message**: Extract the secret riddle hidden within the provided [image](goodluck.png).  
 2. **Solve the Riddle**: Decipher the hidden message to reveal the answer.  
@@ -34,13 +41,6 @@ Welcome to the StegaCrypt Mini CTF! Your mission is to extract a hidden riddle f
 ### 🏆 **How to Win**
 - Submit your solution to cyfertrace@gmail.com or comment on our **LinkedIn post**.  
 - Include a brief description of your extraction process to earn bonus points!  
-
----
-
-### 📜 **Rules**
-1. Do not use StegaCrypt to extract the data.  
-2. Be respectful of others and ethical in your approach.  
-3. Have fun and challenge yourself!  
 
 ---
 
