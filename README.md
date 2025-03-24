@@ -142,4 +142,4 @@ Contributions are welcome! Please fork the repository and create a pull request.
 
 **Team Cyfer Trace**
 
-For any queries or issues, feel free to contact us via the [Issues](https://github.com/your-repo/StegaCrypt/issues) page.
+For any queries or issues, feel free to contact us via [cyfertrace@gmail.com](mailto:cyfertrace@gmail.com)
