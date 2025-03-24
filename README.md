@@ -1,10 +1,9 @@
-
 # StegaCrypt
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.7%2B-brightgreen.svg)](https://www.python.org/)
 
-**StegaCrypt** is a CLI tool for securely hiding messages in images using steganography, combined with robust encryption and decryption features. It allows users to securely share sensitive data by embedding it into image files.
+**StegaCrypt** is a CLI tool for securely hiding messages in images using steganography, combined with robust encryption and decryption. It allows users to securely share sensitive data by embedding it into image files.
 
 ---
 
@@ -21,18 +20,18 @@
 
 1. Clone the repository:
    ```bash
-   https://github.com/Team-Cyfer-Trace/Stegacrypt.git
+   git clone https://github.com/your-repo/StegaCrypt.git
    cd StegaCrypt
    ```
 
-2. Install the package:
+2. Install the required dependencies:
    ```bash
-   pip install .
+   pip install -r requirements.txt
    ```
 
-3. Verify the installation:
+3. Verify the script works:
    ```bash
-   stegacrypt --help
+   python stegacrypt.py -h
    ```
 
 ---
@@ -41,7 +40,7 @@
 
 ### Store (Encrypt and Hide a Message in an Image)
 ```bash
-stegacrypt -s -m "This is a secret message" -p "password123" -i input_image.png -o stego_image.png
+python stegacrypt.py -s -m "Your secret message" -p "password123" -i input.png -o stego_image.png
 ```
 - `-s`: Store mode.
 - `-m`: The message to hide.
@@ -51,7 +50,7 @@ stegacrypt -s -m "This is a secret message" -p "password123" -i input_image.png 
 
 ### Read (Extract and Decrypt a Message from an Image)
 ```bash
-stegacrypt -r -p "password123" -i stego_image.png -o output.txt
+python stegacrypt.py -r -p "password123" -i stego_image.png -o message.txt
 ```
 - `-r`: Read mode.
 - `-p`: Password for decryption.
@@ -60,7 +59,7 @@ stegacrypt -r -p "password123" -i stego_image.png -o output.txt
 
 ### Encrypt Only (Without Hiding in an Image)
 ```bash
-stegacrypt -e -m "This is a secret message" -p "password123" -o encrypted.txt
+python stegacrypt.py -e -m "Your message" -p "password123" -o encrypted_message.txt
 ```
 - `-e`: Encrypt mode.
 - `-m`: Message to encrypt.
@@ -69,7 +68,7 @@ stegacrypt -e -m "This is a secret message" -p "password123" -o encrypted.txt
 
 ### Decrypt Only (Without Extracting from an Image)
 ```bash
-stegacrypt -d -m "EncryptedMessageHere" -p "password123" -o decrypted.txt
+python stegacrypt.py -d -m "EncryptedMessageHere" -p "password123" -o decrypted_message.txt
 ```
 - `-d`: Decrypt mode.
 - `-m`: Encrypted message.
@@ -82,22 +81,22 @@ stegacrypt -d -m "EncryptedMessageHere" -p "password123" -o decrypted.txt
 
 ### Hiding a Secret Message
 ```bash
-stegacrypt -s -m "Hello, this is a top-secret message!" -p "securepassword" -i cat.png -o cat_stego.png
+python stegacrypt.py -s -m "Top Secret Data" -p "StrongPassword" -i original.png -o stego_image.png
 ```
 
 ### Reading the Hidden Message
 ```bash
-stegacrypt -r -p "securepassword" -i cat_stego.png
+python stegacrypt.py -r -p "StrongPassword" -i stego_image.png
 ```
 
 ### Encrypting a Message
 ```bash
-stegacrypt -e -m "Confidential data" -p "mykey" -o encrypted.txt
+python stegacrypt.py -e -m "Confidential Info" -p "SecurePass" -o encrypted.txt
 ```
 
 ### Decrypting a Message
 ```bash
-stegacrypt -d -m "EncryptedMessageHere" -p "mykey"
+python stegacrypt.py -d -m "EncryptedMessageHere" -p "SecurePass"
 ```
 
 ---
@@ -108,12 +107,13 @@ stegacrypt -d -m "EncryptedMessageHere" -p "mykey"
 - Libraries:
   - [Click](https://pypi.org/project/click/)
   - [Cryptography](https://pypi.org/project/cryptography/)
+  - [OpenCV](https://pypi.org/project/opencv-python-headless/)
 
 ---
 
 ## How It Works
 
-1. **Encrypting Messages**: Messages are encrypted using a password to provide confidentiality.
+1. **Encrypting Messages**: Messages are encrypted using AES with a password to provide confidentiality.
 2. **Hiding Data**: Encrypted messages are embedded into the least significant bits of pixel data in the image.
 3. **Extracting Data**: The hidden data is extracted from the image.
 4. **Decrypting Messages**: Extracted data is decrypted using the same password.
@@ -128,13 +128,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and create a pull request.
-
-1. Fork the project.
-2. Create your feature branch: `git checkout -b feature-name`.
-3. Commit your changes: `git commit -m 'Add some feature'`.
+We welcome contributions to StegaCrypt! To contribute:
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature-name`.
+3. Commit your changes: `git commit -m "Add feature"`.
 4. Push to the branch: `git push origin feature-name`.
-5. Open a pull request.
+5. Submit a pull request.
 
 ---
 
