@@ -9,8 +9,19 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
+def display_logo():
+    logo = """
+ ██████╗ ██╗   ██╗  ███████╗  ███████╗  ██████╗      ████████╗  ██████╗    █████╗    ██████╗  ███████╗               
+██╔════╝ ╚██╗ ██╔╝  ██╔════╝  ██╔════╝  ██╔══██╗     ╚══██╔══╝  ██╔══██╗  ██╔══██╗  ██╔════╝  ██╔════╝   
+██║       ╚████╔╝   █████╗    █████╗    ██████╔╝        ██║     ██████╔╝  ███████║  ██║       █████╗                    
+██║        ╚██╔╝    ██╔══╝    ██╔══╝    ██╔══██╗        ██║     ██╔══██╗  ██╔══██║  ██║       ██╔══╝    
+╚██████╗    ██║     ██║       ███████╗  ██║  ██║        ██║     ██║  ██║  ██║  ██║  ╚██████╗  ███████╗  
+ ╚═════╝    ╚═╝     ╚═╝       ╚══════╝  ╚═╝  ╚═╝        ╚═╝     ╚═╝  ╚═╝  ╚═╝  ╚═╝   ╚═════╝  ╚══════╝                   
+"""
+    print(logo)
 
 def main():
+    display_logo()
     parser = argparse.ArgumentParser(
         description="Image Steganography with Encryption and Decryption | Proudly Made by Team Cyfer Trace | Version 1.0"
     )
@@ -113,3 +124,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#the Code works file tested on windows 11 with Python > 3.12
